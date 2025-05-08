@@ -1,0 +1,33 @@
+services:
+  mysqldb:
+    image: mysql:8
+    restart: always
+    container_name: mysqldb
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+    volumes:
+      - db_data:/var/lib/mysql
+    
+  backend:
+    depends_on:
+      - mysqldb
+    build: ./backend
+    image: backend
+    container_name: backend
+    restart: always
+    environment:
+      - DB_HOST=mysqldb
+    ports:
+      - 3000:3000
+  
+  frontend:
+    depends_on:
+      - backend
+    build: ./frontend
+    image: frontend
+    container_name: frontend
+    ports:
+      - 5173:80
+
+volumes:
+  db_data:
