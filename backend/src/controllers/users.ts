@@ -29,7 +29,7 @@ export async function signUp(req: Request, res: Response) {
       return
     }
     const contraseña_hash = await bcrypt.hash(password, 10);
-    const newUser = await Usuarios.create({ nombre, apellido, email, contraseña_hash, tipo_usuario });
+    const newUser = await Usuarios.upsert({ nombre, apellido, email, contraseña_hash, tipo_usuario });
     return res.status(201).json(newUser);
   } catch (error) {
     console.log(error)
