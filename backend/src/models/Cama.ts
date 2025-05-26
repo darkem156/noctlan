@@ -19,5 +19,5 @@ export default {
     },
     onUpdate: "CASCADE",
     onDelete: "CASCADE"
-  }
+  },
 };

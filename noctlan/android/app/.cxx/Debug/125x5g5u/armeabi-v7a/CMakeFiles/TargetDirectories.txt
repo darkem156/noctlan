@@ -1,0 +1,2 @@
+/home/emmanuel/Documents/programacion/proyectos/noctlan/noctlan/android/app/.cxx/Debug/125x5g5u/armeabi-v7a/CMakeFiles/edit_cache.dir
+/home/emmanuel/Documents/programacion/proyectos/noctlan/noctlan/android/app/.cxx/Debug/125x5g5u/armeabi-v7a/CMakeFiles/rebuild_cache.dir
