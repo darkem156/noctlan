@@ -181,8 +181,9 @@ class _VerPacienteScreenState extends State<VerPacienteScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => const SimulacionMetricasScreen(
+                                builder: (_) => SimulacionMetricasScreen(
                                   wsUrl: 'ws://$API_URI/metrics',
+                                  userId: paciente['id'],
                                 ),
                               ),
                             );

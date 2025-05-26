@@ -6,7 +6,9 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 class SimulacionMetricasScreen extends StatefulWidget {
   final String
       wsUrl; // URL del WebSocket, por ejemplo: ws://localhost:3000/metrics
-  const SimulacionMetricasScreen({super.key, required this.wsUrl});
+  final int userId; // ID del usuario, aunque no se usa en esta simulación
+  const SimulacionMetricasScreen(
+      {super.key, required this.wsUrl, required this.userId});
 
   @override
   State<SimulacionMetricasScreen> createState() =>
@@ -41,8 +43,6 @@ class _SimulacionMetricasScreenState extends State<SimulacionMetricasScreen> {
   void _procesarDatos(String message) {
     final data = jsonDecode(message);
     final pacientes = data['pacientes'] as List<dynamic>?;
-    print(pacientes);
-
     if (pacientes == null) return;
 
     setState(() {
@@ -50,6 +50,7 @@ class _SimulacionMetricasScreenState extends State<SimulacionMetricasScreen> {
 
       for (final paciente in pacientes) {
         final id = paciente['id'] as int;
+        if (id != widget.userId) continue;
 
         final ritmo = (paciente['ritmoCardiaco'] as num).toDouble();
         final resp = (paciente['respiracion'] as num).toDouble();

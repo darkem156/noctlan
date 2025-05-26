@@ -49,16 +49,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: [
                       const Text('Bienvenido al sistema'),
                       const SizedBox(height: 20),
-                      Text(
-                        metricasPaciente1 != null
-                            ? 'WebSocket activo: Métricas de paciente 1 recibidas'
-                            : 'Esperando conexión WebSocket...',
-                        style: TextStyle(
-                          color: metricasPaciente1 != null
-                              ? Colors.green
-                              : Colors.grey,
-                        ),
-                      ),
                       const SizedBox(height: 20),
                       const Text('Bienvenido al sistema'),
                       const SizedBox(height: 20),

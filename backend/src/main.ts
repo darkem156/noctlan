@@ -36,9 +36,19 @@ function broadcastMetricas() {
   const pacientesConCama: Paciente[] = [];
   Pacientes.findAll({
     attributes: ['id', 'nombre'],
+    include: [{
+      model: Atenciones,
+      attributes: [],
+      include: [{
+        model: Camas,
+        attributes: ['id', 'numero'],
+        required: true, // Asegurarse de que solo se incluyan pacientes con cama asignada
+      }],
+    }],
     raw: true,
   }).then((pacientes) => {
     pacientes.map(paciente => {
+      if (!paciente['Atencion_pacientes.Cama.id']) return
       const pacienteConCama: Paciente = {
         id: paciente.id,
         nombre: paciente.nombre,
