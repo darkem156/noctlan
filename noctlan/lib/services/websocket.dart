@@ -13,9 +13,16 @@ class WebSocketService with ChangeNotifier {
   WebSocketService() {
     _channel.stream.listen((event) {
       final data = jsonDecode(event);
-      print(data);
-      final int pacienteId = data['pacienteId'];
-      _metricasPorPaciente[pacienteId] = data;
+      data['pacientes'].forEach((paciente) {
+        final pacienteId = paciente['id'];
+        _metricasPorPaciente[pacienteId] = {
+          'ritmo_cardiaco': paciente['ritmo_cardiaco'],
+          'respiracion': paciente['respiracion'],
+          'ruido': paciente['ruido'],
+        };
+      });
+      //final int pacienteId = data['id'];
+      //_metricasPorPaciente[pacienteId] = data;
       notifyListeners();
     });
   }

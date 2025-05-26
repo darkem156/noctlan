@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:noctlan/utils/api.dart';
+import 'package:provider/provider.dart';
 import 'dart:convert';
 import './register.dart';
 import '../utils/jwt.dart';
 import './verUsuario.dart';
 import './verPaciente.dart';
-import 'asignarCamaMedico.dart';
+import '../services/websocket.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -33,98 +34,115 @@ class _LoginScreenState extends State<LoginScreen> {
       final token = jsonDecode(response.body)['token'];
       final tipoUsuario = parseJwt(token)['tipo_usuario'];
       Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (_) => Scaffold(
-                  appBar: AppBar(title: const Text('Sistema de Monitoreo')),
-                  body: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text('Bienvenido al sistema'),
-                        const SizedBox(height: 20),
-                        if (tipoUsuario == 'administrador')
-                          ElevatedButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) => RegisterScreen(jwt: token)),
-                              );
-                            },
-                            child: const Text('Registrar usuario'),
-                          ),
-                        const SizedBox(height: 20),
-                        if (tipoUsuario == 'administrador')
-                          ElevatedButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) => VerUsuarioScreen()),
-                              );
-                            },
-                            child: const Text('Ver usuarios'),
-                          ),
-                        const SizedBox(height: 20),
+          context,
+          MaterialPageRoute(
+            builder: (_) => Consumer<WebSocketService>(
+                builder: (context, wsService, child) {
+              final metricasPaciente1 =
+                  wsService.getMetricasDePaciente(1); // ID de prueba
+
+              return Scaffold(
+                appBar: AppBar(title: const Text('Sistema de Monitoreo')),
+                body: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text('Bienvenido al sistema'),
+                      const SizedBox(height: 20),
+                      Text(
+                        metricasPaciente1 != null
+                            ? 'WebSocket activo: Métricas de paciente 1 recibidas'
+                            : 'Esperando conexión WebSocket...',
+                        style: TextStyle(
+                          color: metricasPaciente1 != null
+                              ? Colors.green
+                              : Colors.grey,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      const Text('Bienvenido al sistema'),
+                      const SizedBox(height: 20),
+                      if (tipoUsuario == 'administrador')
                         ElevatedButton(
                           onPressed: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (_) => RegisterPacienteScreen()),
+                                  builder: (_) => RegisterScreen(jwt: token)),
                             );
                           },
-                          child: const Text('Registrar paciente'),
+                          child: const Text('Registrar usuario'),
                         ),
-                        const SizedBox(height: 20),
+                      const SizedBox(height: 20),
+                      if (tipoUsuario == 'administrador')
                         ElevatedButton(
                           onPressed: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (_) => VerPacienteScreen()),
+                                  builder: (_) => VerUsuarioScreen()),
                             );
                           },
-                          child: const Text('Ver pacientes'),
+                          child: const Text('Ver usuarios'),
                         ),
-                        const SizedBox(height: 20),
-                        if (tipoUsuario == 'administrador')
-                          ElevatedButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) => AdministrarAreasScreen()),
-                              );
-                            },
-                            child: const Text('Administrar áreas'),
-                          ),
-                        const SizedBox(height: 20),
-                        if (tipoUsuario == 'administrador')
-                          ElevatedButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) => AdministrarCuartosScreen()),
-                              );
-                            },
-                            child: const Text('Administrar cuartos'),
-                          ),
-                        const SizedBox(height: 20),
-                        if (tipoUsuario == 'administrador')
-                          ElevatedButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) => CamasScreen()),
-                              );
-                            },
-                            child: const Text('Administrar camas'),
-                          ),
-                        /*
+                      const SizedBox(height: 20),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => RegisterPacienteScreen()),
+                          );
+                        },
+                        child: const Text('Registrar paciente'),
+                      ),
+                      const SizedBox(height: 20),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => VerPacienteScreen()),
+                          );
+                        },
+                        child: const Text('Ver pacientes'),
+                      ),
+                      const SizedBox(height: 20),
+                      if (tipoUsuario == 'administrador')
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => AdministrarAreasScreen()),
+                            );
+                          },
+                          child: const Text('Administrar áreas'),
+                        ),
+                      const SizedBox(height: 20),
+                      if (tipoUsuario == 'administrador')
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => AdministrarCuartosScreen()),
+                            );
+                          },
+                          child: const Text('Administrar cuartos'),
+                        ),
+                      const SizedBox(height: 20),
+                      if (tipoUsuario == 'administrador')
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => CamasScreen()),
+                            );
+                          },
+                          child: const Text('Administrar camas'),
+                        ),
+                      /*
                         const SizedBox(height: 20),
                         if (tipoUsuario == 'administrador' ||
                             tipoUsuario == 'medico')
@@ -139,11 +157,12 @@ class _LoginScreenState extends State<LoginScreen> {
                             child: const Text('Asignar camas a médicos'),
                           ),
                           */
-                      ],
-                    ),
+                    ],
                   ),
-                )), //RegisterScreen(jwt: token)),
-      );
+                ),
+              );
+            }), //RegisterScreen(jwt: token)),
+          ));
     } else {
       setState(() {
         error = 'Credenciales incorrectas';
