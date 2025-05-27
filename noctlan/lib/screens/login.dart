@@ -49,9 +49,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: [
                       const Text('Bienvenido al sistema'),
                       const SizedBox(height: 20),
-                      const SizedBox(height: 20),
-                      const Text('Bienvenido al sistema'),
-                      const SizedBox(height: 20),
                       if (tipoUsuario == 'administrador')
                         ElevatedButton(
                           onPressed: () {
@@ -197,19 +194,39 @@ class RegisterPacienteScreen extends StatefulWidget {
 class _RegisterPacienteScreenState extends State<RegisterPacienteScreen> {
   final _nombre = TextEditingController();
   final _apellido = TextEditingController();
-  final _fechaNacimiento = TextEditingController();
-  final _genero = TextEditingController();
+  DateTime? _fechaSeleccionada;
+  String? _generoSeleccionado;
   String? status;
 
+  Future<void> _seleccionarFecha(BuildContext context) async {
+    final DateTime? fecha = await showDatePicker(
+      context: context,
+      initialDate: _fechaSeleccionada ?? DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+
+    if (fecha != null) {
+      setState(() {
+        _fechaSeleccionada = fecha;
+      });
+    }
+  }
+
   Future<void> registrar() async {
+    if (_fechaSeleccionada == null || _generoSeleccionado == null) {
+      setState(() => status = 'Completa todos los campos');
+      return;
+    }
+
     final response = await http.post(
       Uri.parse('http://$API_URI/pacientes'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'nombre': _nombre.text,
         'apellido': _apellido.text,
-        'fechaNacimiento': _fechaNacimiento.text,
-        'genero': _genero.text,
+        'fechaNacimiento': _fechaSeleccionada!.toIso8601String(),
+        'genero': _generoSeleccionado,
       }),
     );
 
@@ -217,8 +234,8 @@ class _RegisterPacienteScreenState extends State<RegisterPacienteScreen> {
       if (response.statusCode == 201) {
         _nombre.clear();
         _apellido.clear();
-        _fechaNacimiento.clear();
-        _genero.clear();
+        _fechaSeleccionada = null;
+        _generoSeleccionado = null;
         status = 'Paciente registrado correctamente';
       } else {
         status =
@@ -229,6 +246,10 @@ class _RegisterPacienteScreenState extends State<RegisterPacienteScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final fechaNacimientoTexto = _fechaSeleccionada == null
+        ? ''
+        : '${_fechaSeleccionada!.day}/${_fechaSeleccionada!.month}/${_fechaSeleccionada!.year}';
+
     return Scaffold(
       appBar: AppBar(title: const Text('Registrar Paciente')),
       body: SingleChildScrollView(
@@ -236,23 +257,64 @@ class _RegisterPacienteScreenState extends State<RegisterPacienteScreen> {
         child: Column(
           children: [
             if (status != null)
-              Text(status!, style: const TextStyle(color: Colors.green)),
+              Text(
+                status!,
+                style: TextStyle(
+                  color: status!.contains('correctamente')
+                      ? Colors.green
+                      : Colors.red,
+                ),
+              ),
             TextField(
-                controller: _nombre,
-                decoration: const InputDecoration(labelText: 'Nombre')),
+              controller: _nombre,
+              decoration: const InputDecoration(labelText: 'Nombre'),
+            ),
             TextField(
-                controller: _apellido,
-                decoration: const InputDecoration(labelText: 'Apellido')),
-            TextField(
-                controller: _fechaNacimiento,
-                decoration:
-                    const InputDecoration(labelText: 'Fecha de Nacimiento')),
-            TextField(
-                controller: _genero,
-                decoration: const InputDecoration(labelText: 'Género')),
+              controller: _apellido,
+              decoration: const InputDecoration(labelText: 'Apellido'),
+            ),
+            GestureDetector(
+              onTap: () => _seleccionarFecha(context),
+              child: AbsorbPointer(
+                child: TextField(
+                  decoration: InputDecoration(
+                    labelText: 'Fecha de Nacimiento',
+                    hintText: 'Selecciona una fecha',
+                    suffixIcon: const Icon(Icons.calendar_today),
+                  ),
+                  controller: TextEditingController(text: fechaNacimientoTexto),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            DropdownButtonFormField<String>(
+              value: _generoSeleccionado,
+              items: const [
+                DropdownMenuItem(
+                  value: 'masculino',
+                  child: Text('Masculino'),
+                ),
+                DropdownMenuItem(
+                  value: 'femenino',
+                  child: Text('Femenino'),
+                ),
+                DropdownMenuItem(
+                  value: 'otro',
+                  child: Text('Otro'),
+                ),
+              ],
+              decoration: const InputDecoration(labelText: 'Género'),
+              onChanged: (value) {
+                setState(() {
+                  _generoSeleccionado = value;
+                });
+              },
+            ),
             const SizedBox(height: 20),
             ElevatedButton(
-                onPressed: registrar, child: const Text('Registrar paciente')),
+              onPressed: registrar,
+              child: const Text('Registrar paciente'),
+            ),
           ],
         ),
       ),

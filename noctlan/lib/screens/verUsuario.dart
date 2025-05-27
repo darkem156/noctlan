@@ -49,7 +49,8 @@ class _VerUsuarioScreenState extends State<VerUsuarioScreen> {
               Text(status!, style: const TextStyle(color: Colors.red)),
             ...usuarios.map((usuario) => ListTile(
                   title: Text('${usuario['nombre']} ${usuario['apellido']}'),
-                  subtitle: Text('Email: ${usuario['email']}'),
+                  subtitle: Text(
+                      'Email: ${usuario['email']} - Rol: ${usuario['tipo_usuario']}'),
                 )),
           ],
         ),
