@@ -7,8 +7,14 @@ class SimulacionMetricasScreen extends StatefulWidget {
   final String
       wsUrl; // URL del WebSocket, por ejemplo: ws://localhost:3000/metrics
   final int userId; // ID del usuario, aunque no se usa en esta simulación
+  final String nombrePaciente;
+  final String camaString;
   const SimulacionMetricasScreen(
-      {super.key, required this.wsUrl, required this.userId});
+      {super.key,
+      required this.wsUrl,
+      required this.userId,
+      required this.nombrePaciente,
+      required this.camaString});
 
   @override
   State<SimulacionMetricasScreen> createState() =>
@@ -120,6 +126,9 @@ class _SimulacionMetricasScreenState extends State<SimulacionMetricasScreen> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
+            Text('${widget.nombrePaciente} - Cama: ${widget.camaString}',
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             _buildGrafica(
                 'Frecuencia Cardíaca (bpm)', ritmoCardiacoMap, Colors.red),
             _buildGrafica('Respiración (rpm)', respiracionMap, Colors.blue),

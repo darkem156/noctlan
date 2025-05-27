@@ -587,7 +587,7 @@ class _CamasScreenState extends State<CamasScreen> {
             ...camas.map((cama) => ListTile(
                   title: Text('Cama N° ${cama['numero']}'),
                   subtitle: Text(
-                    'Cuarto: ${cama['Cuarto']?['nombre'] ?? 'Desconocido'} - Medico asignado: ${cama['Usuario'] != null ? '${cama['Usuario']['nombre']} ${cama['Usuario']['apellido']} (id: ${cama['Usuario']['id']})' : 'Ninguno'}',
+                    'Cuarto: ${cama['Cuarto']?['nombre'] ?? 'Desconocido'} - Medico asignado: ${cama['Atencion_pacientes'].length == 0 ? 'Ninguno' : "${cama['Atencion_pacientes'][0]['Usuario']?['nombre']} ${cama['Atencion_pacientes'][0]['Usuario']?['apellido']}"}',
                   ),
                 )),
             const SizedBox(height: 20),

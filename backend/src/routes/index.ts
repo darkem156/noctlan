@@ -99,22 +99,11 @@ router.patch('/pacientes/:id', async (req, res) => {
       return res.status(404).json({ message: 'Paciente no encontrado' });
     }
 
-    // Verificar que la cama existe y tiene un médico asignado (Usuario)
     const cama = await Camas.findOne({
-      where: { id: camaId },
-      include: {
-        model: Usuarios,
-        as: 'Usuario',
-        attributes: ['id']
-      }
-    });
+      where: { id: camaId }});
 
     if (!cama) {
       return res.status(404).json({ message: 'Cama no encontrada' });
-    }
-
-    if (!cama.dataValues.Usuario) {
-      return res.status(400).json({ message: 'La cama no tiene un médico asignado' });
     }
 
     // Asignar la cama al paciente
@@ -236,6 +225,14 @@ router.get('/camas', async (req, res) => {
         model: Cuartos,
         as: 'Cuarto', // Usa el alias que tengas definido en la relación, si es necesario
         attributes: ['id', 'nombre'] // Incluye los campos que necesites
+      }, {
+        model: Atenciones,
+        as: 'Atencion_pacientes',
+        include: [{
+          model: Usuarios,
+          as: 'Usuario',
+          attributes: ['id', 'nombre', 'apellido']
+        }]
       }]}
     )
     return res.status(200).json(camas)

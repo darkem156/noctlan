@@ -184,6 +184,9 @@ class _VerPacienteScreenState extends State<VerPacienteScreen> {
                                 builder: (_) => SimulacionMetricasScreen(
                                   wsUrl: 'ws://$API_URI/metrics',
                                   userId: paciente['id'],
+                                  nombrePaciente: '${paciente['nombre']}',
+                                  camaString:
+                                      '${camaActual['numero']} - ${camaActual['Cuarto']['nombre']}',
                                 ),
                               ),
                             );
@@ -195,9 +198,11 @@ class _VerPacienteScreenState extends State<VerPacienteScreen> {
                         value: camasSeleccionadas[pacienteId],
                         items:
                             camasDisponibles.map<DropdownMenuItem<int>>((cama) {
+                          print(cama);
                           return DropdownMenuItem<int>(
                             value: cama['id'],
-                            child: Text('Cama ${cama['numero']}'),
+                            child: Text(
+                                'Cama ${cama['numero']} - ${cama['Cuarto']['nombre']}'),
                           );
                         }).toList(),
                         onChanged: (value) {
